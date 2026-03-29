@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Recetas | ' + ${recipe.name}">Recetas</title>
+    <link rel="stylesheet" th:href="@{/app.css}" href="/app.css">
+</head>
+<body>
+<header class="simple-header">
+    <nav class="topbar">
+        <a class="brand" th:href="@{/}">Recetas DUOC</a>
+        <div class="topbar-actions">
+            <a class="nav-link" th:href="@{/buscar}">Buscar</a>
+            <span class="nav-link" th:text="'Usuario: ' + ${username}">Usuario</span>
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-outline" type="submit">Cerrar sesión</button>
+            </form>
+        </div>
+    </nav>
+</header>
+
+<main class="page-wrapper detail-layout">
+    <section class="detail-image-panel">
+        <img th:src="${recipe.imageUrl}" th:alt="${recipe.name}">
+    </section>
+
+    <section class="detail-content">
+        <span class="badge" th:text="${recipe.countryOfOrigin}">Chile</span>
+        <h1 th:text="${recipe.name}">Nombre receta</h1>
+        <p class="detail-summary" th:text="${recipe.summary}">Resumen</p>
+
+        <div class="meta-row strong">
+            <span th:text="'Tipo de cocina: ' + ${recipe.cuisineType}">Tipo</span>
+            <span th:text="'Dificultad: ' + ${recipe.difficulty}">Dificultad</span>
+            <span th:text="'Tiempo: ' + ${recipe.cookTimeMinutes} + ' min'">Tiempo</span>
+        </div>
+
+        <div class="detail-columns">
+            <article class="detail-box">
+                <h2>Ingredientes</h2>
+                <ul>
+                    <li th:each="ingredient : ${recipe.ingredients}" th:text="${ingredient}">Ingrediente</li>
+                </ul>
+            </article>
+            <article class="detail-box">
+                <h2>Preparación</h2>
+                <ol>
+                    <li th:each="step : ${recipe.instructions}" th:text="${step}">Paso</li>
+                </ol>
+            </article>
+        </div>
+
+        <a class="btn" th:href="@{/buscar}">Volver a buscar</a>
+    </section>
+</main>
+</body>
+</html>

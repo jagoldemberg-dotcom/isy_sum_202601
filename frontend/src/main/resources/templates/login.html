@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recetas | Iniciar sesión</title>
+    <link rel="stylesheet" th:href="@{/app.css}" href="/app.css">
+</head>
+<body>
+<main class="login-wrapper">
+    <section class="login-card">
+        <p class="eyebrow">Acceso privado</p>
+        <h1>Iniciar sesión</h1>
+        <p>Usa uno de los usuarios configurados para ver el detalle completo de las recetas.</p>
+
+        <div class="alert error" th:if="${param.error}">
+            Usuario o contraseña incorrectos.
+        </div>
+        <div class="alert success" th:if="${param.logout}">
+            Sesión cerrada correctamente.
+        </div>
+
+        <form method="post" th:action="@{/login}" class="login-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <label>
+                Usuario
+                <input type="text" name="username" required>
+            </label>
+            <label>
+                Contraseña
+                <input type="password" name="password" required>
+            </label>
+            <button class="btn" type="submit">Entrar</button>
+        </form>
+
+        <div class="demo-users">
+            <h2>Usuarios de prueba</h2>
+            <ul>
+                <li><strong>chefana</strong> / Receta123!</li>
+                <li><strong>martinchef</strong> / Cocina123!</li>
+                <li><strong>adminrecetas</strong> / Admin123!</li>
+            </ul>
+        </div>
+
+        <a class="text-link" th:href="@{/}">Volver al inicio</a>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recetas | Buscar</title>
+    <link rel="stylesheet" th:href="@{/app.css}" href="/app.css">
+</head>
+<body>
+<header class="simple-header">
+    <nav class="topbar">
+        <a class="brand" th:href="@{/}">Recetas DUOC</a>
+        <div class="topbar-actions">
+            <a class="nav-link" th:href="@{/}">Inicio</a>
+            <a class="btn btn-outline" th:if="${!authenticated}" th:href="@{/login}">Iniciar sesión</a>
+            <div class="session-box" th:if="${authenticated}">
+                <span th:text="'Hola, ' + ${username}">Hola, usuario</span>
+                <form th:action="@{/logout}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="btn btn-outline" type="submit">Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="page-wrapper">
+    <section class="search-panel">
+        <div class="section-heading">
+            <h1>Búsqueda pública de recetas</h1>
+            <p>Filtra por nombre, tipo de cocina, ingrediente, país de origen y dificultad.</p>
+        </div>
+        <form class="search-form" method="get" th:action="@{/buscar}">
+            <input type="text" name="name" placeholder="Nombre" th:value="${name}">
+            <input type="text" name="cuisineType" placeholder="Tipo de cocina" th:value="${cuisineType}">
+            <input type="text" name="ingredient" placeholder="Ingrediente" th:value="${ingredient}">
+            <input type="text" name="countryOfOrigin" placeholder="País de origen" th:value="${countryOfOrigin}">
+            <select name="difficulty">
+                <option value="">Todas las dificultades</option>
+                <option value="Fácil" th:selected="${difficulty == 'Fácil'}">Fácil</option>
+                <option value="Media" th:selected="${difficulty == 'Media'}">Media</option>
+                <option value="Difícil" th:selected="${difficulty == 'Difícil'}">Difícil</option>
+            </select>
+            <button class="btn" type="submit">Buscar</button>
+        </form>
+    </section>
+
+    <section class="section-block">
+        <div class="section-heading">
+            <h2>Resultados</h2>
+            <p th:text="${#lists.size(recipes)} + ' receta(s) encontrada(s)'">0 receta(s)</p>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(recipes)}">
+            No se encontraron recetas con los filtros seleccionados.
+        </div>
+
+        <div class="card-grid" th:if="${!#lists.isEmpty(recipes)}">
+            <article class="recipe-card" th:each="recipe : ${recipes}">
+                <img th:src="${recipe.imageUrl}" th:alt="${recipe.name}">
+                <div class="recipe-card-body">
+                    <span class="badge" th:text="${recipe.countryOfOrigin}">País</span>
+                    <h3 th:text="${recipe.name}">Nombre</h3>
+                    <p th:text="${recipe.summary}">Resumen</p>
+                    <ul class="mini-tags">
+                        <li th:text="${recipe.cuisineType}">Cocina</li>
+                        <li th:text="${recipe.difficulty}">Dificultad</li>
+                        <li th:text="${recipe.cookTimeMinutes} + ' min'">40 min</li>
+                    </ul>
+                    <a class="text-link" th:href="@{/detalle/{id}(id=${recipe.id})}">Ver detalle privado</a>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recetas | Inicio</title>
+    <link rel="stylesheet" th:href="@{/app.css}" href="/app.css">
+</head>
+<body>
+<header class="hero">
+    <nav class="topbar">
+        <a class="brand" th:href="@{/}">Recetas DUOC</a>
+        <div class="topbar-actions">
+            <a class="nav-link" th:href="@{/buscar}">Buscar recetas</a>
+            <a class="btn btn-outline" th:if="${!authenticated}" th:href="@{/login}">Iniciar sesión</a>
+            <div class="session-box" th:if="${authenticated}">
+                <span th:text="'Hola, ' + ${username}">Hola, usuario</span>
+                <form th:action="@{/logout}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="btn btn-outline" type="submit">Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-content">
+        <div>
+            <p class="eyebrow">Sitio público</p>
+            <h1>Comparte y descubre recetas de cocina</h1>
+            <p class="hero-text">
+                Revisa las recetas más recientes y populares, busca por nombre, cocina, ingrediente,
+                país de origen o dificultad, y entra al detalle completo sólo cuando hayas iniciado sesión.
+            </p>
+            <div class="hero-buttons">
+                <a class="btn" th:href="@{/buscar}">Buscar recetas</a>
+                <a class="btn btn-secondary" th:href="@{/login}" th:if="${!authenticated}">Acceder a recetas privadas</a>
+            </div>
+        </div>
+        <aside class="ad-panel">
+            <h2>Banners comerciales</h2>
+            <div class="ad-card">
+                <strong>Mercado Fresco</strong>
+                <p>Frutas y verduras de temporada para tus preparaciones saludables.</p>
+            </div>
+            <div class="ad-card">
+                <strong>Sartenes ProChef</strong>
+                <p>Utensilios antiadherentes con despacho a todo Chile.</p>
+            </div>
+        </aside>
+    </section>
+</header>
+
+<main class="page-wrapper">
+    <section class="section-block">
+        <div class="section-heading">
+            <h2>Recetas más recientes</h2>
+            <p>Vista pública con resumen. El detalle completo requiere autenticación.</p>
+        </div>
+        <div class="card-grid">
+            <article class="recipe-card" th:each="recipe : ${latestRecipes}">
+                <img th:src="${recipe.imageUrl}" th:alt="${recipe.name}">
+                <div class="recipe-card-body">
+                    <span class="badge" th:text="${recipe.countryOfOrigin}">Chile</span>
+                    <h3 th:text="${recipe.name}">Pastel de choclo</h3>
+                    <p th:text="${recipe.summary}">Resumen</p>
+                    <div class="meta-row">
+                        <span th:text="${recipe.cuisineType}">Chilena</span>
+                        <span th:text="${recipe.difficulty}">Media</span>
+                        <span th:text="${recipe.cookTimeMinutes} + ' min'">45 min</span>
+                    </div>
+                    <a class="text-link" th:href="@{/detalle/{id}(id=${recipe.id})}">Ver detalle privado</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="section-block soft-panel">
+        <div class="section-heading">
+            <h2>Recetas más populares</h2>
+            <p>Selección destacada para motivar a los usuarios a leer y compartir más preparaciones.</p>
+        </div>
+        <div class="card-grid">
+            <article class="recipe-card compact" th:each="recipe : ${popularRecipes}">
+                <img th:src="${recipe.imageUrl}" th:alt="${recipe.name}">
+                <div class="recipe-card-body">
+                    <h3 th:text="${recipe.name}">Ceviche peruano</h3>
+                    <p th:text="${recipe.summary}">Resumen</p>
+                    <div class="meta-row">
+                        <span th:text="'Popularidad: ' + ${recipe.popularityScore}">Popularidad</span>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+</body>
+</html>

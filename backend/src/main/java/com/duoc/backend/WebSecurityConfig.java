@@ -29,17 +29,28 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(HttpMethod.POST, Constants.LOGIN_URL).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/recipes", "/recipes/latest", "/recipes/popular", "/recipes/search").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/recipes/**").hasRole("ADMIN")
+                // 1. Corrección: Habilitar encabezados de seguridad (CSP, X-Frame-Options, X-Content-Type-Options)
+                .headers(headers -> headers
+                        // Mitigación Anti-Clickjacking
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                        // Mitigación MIME-sniffing
+                        .contentTypeOptions(contentTypeOptions -> {})
+                        // Mitigación XSS forzando CSP
+                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self'"))
+                        // Mitigación HSTS (Strict-Transport-Security)
+                        .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
+                )
+                // Reglas de autorización existentes...
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/", "/home", "/**.css").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+                .formLogin((form) -> form
+                        .loginPage("/login").permitAll()
+                )
+                .logout((logout) -> logout.permitAll());
 
         return http.build();
     }

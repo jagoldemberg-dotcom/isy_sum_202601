@@ -28,7 +28,7 @@
     <section class="search-panel">
         <div class="section-heading">
             <h1>Búsqueda pública de recetas</h1>
-            <p>Filtra por nombre, tipo de cocina, ingrediente, país de origen y dificultad.</p>
+            <p>Filtra por nombre, tipo de cocina, ingrediente, país de origen y dificultad consultando la API backend.</p>
         </div>
         <form class="search-form" method="get" th:action="@{/buscar}">
             <input type="text" name="name" placeholder="Nombre" th:value="${name}">

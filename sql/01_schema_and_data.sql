@@ -43,10 +43,6 @@ CREATE TABLE recipe_photos (
     CONSTRAINT fk_recipe_photos_recipe FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
 );
 
-INSERT INTO users (username, email, password, role) VALUES
-('chefana', 'chefana@duoc.cl', '$2y$10$2Helkx6rWOboHf8euDjVCOdb5Gkew3jBr165uHElOgVk69JCSO5c6', 'ROLE_USER'),
-('martinchef', 'martinchef@duoc.cl', '$2y$10$byCQCfKn4Nqa94kJNGoFNOMMBTDaRfauGipbeLBDTVtZm47UHqMoW', 'ROLE_USER'),
-('adminrecetas', 'admin@duoc.cl', '$2y$10$BopQ4aGHiEOsufYNM3jc9eH7UbC/4BxhY0A5d0xGGbkZdnUf2QaMe', 'ROLE_ADMIN');
 
 INSERT INTO recipes (name, cuisine_type, country_of_origin, difficulty, summary, instructions, cook_time_minutes, popularity_score, created_at) VALUES
 ('Pastel de choclo', 'Chilena', 'Chile', 'Media', 'Receta tradicional chilena con pino, pollo y cobertura de choclo.', 'Prepara el pino. Cocina el pollo. Procesa el choclo. Arma la fuente y hornea hasta dorar.', 55, 96, '2026-03-20 12:00:00'),

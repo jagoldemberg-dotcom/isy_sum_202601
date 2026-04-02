@@ -47,7 +47,7 @@
             <article class="detail-box">
                 <h2>Preparación</h2>
                 <ol>
-                    <li th:each="step : ${recipe.instructions}" th:text="${step}">Paso</li>
+                    <li th:each="step : ${recipe.instructionSteps}" th:text="${step}">Paso</li>
                 </ol>
             </article>
         </div>

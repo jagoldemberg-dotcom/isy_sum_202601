@@ -15,6 +15,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.FetchType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -70,13 +71,13 @@ public class Recipe {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "recipe_ingredients", joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "ingredient", nullable = false, length = 120)
     @NotEmpty(message = "Debe informar al menos un ingrediente")
     private List<String> ingredients = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "recipe_photos", joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "photo_url", nullable = false, length = 500)
     private List<String> photos = new ArrayList<>();

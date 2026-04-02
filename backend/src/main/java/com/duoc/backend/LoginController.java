@@ -2,6 +2,7 @@ package com.duoc.backend;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,13 +28,17 @@ public class LoginController {
 
     @PostMapping(Constants.LOGIN_URL)
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        User user = (User) userDetailsService.loadUserByUsername(loginRequest.getUsername());
+        try {
+            User user = (User) userDetailsService.loadUserByUsername(loginRequest.getUsername());
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                throw new ResponseStatusException(UNAUTHORIZED, "Credenciales inválidas");
+            }
+
+            String token = jwtAuthenticationConfig.getJWTToken(user.getUsername(), user.getRole());
+            return ResponseEntity.ok(new LoginResponse(token, user.getUsername(), user.getRole()));
+        } catch (UsernameNotFoundException | IllegalArgumentException ex) {
             throw new ResponseStatusException(UNAUTHORIZED, "Credenciales inválidas");
         }
-
-        String token = jwtAuthenticationConfig.getJWTToken(user.getUsername(), user.getRole());
-        return ResponseEntity.ok(new LoginResponse(token, user.getUsername(), user.getRole()));
     }
 }

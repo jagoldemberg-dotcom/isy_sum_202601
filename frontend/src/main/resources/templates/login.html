@@ -11,7 +11,7 @@
     <section class="login-card">
         <p class="eyebrow">Acceso privado</p>
         <h1>Iniciar sesión</h1>
-        <p>Usa uno de los usuarios configurados para ver el detalle completo de las recetas.</p>
+        <p>Usa uno de los usuarios almacenados en el backend para ver el detalle completo de las recetas.</p>
 
         <div class="alert error" th:if="${param.error}">
             Usuario o contraseña incorrectos.
@@ -34,7 +34,7 @@
         </form>
 
         <div class="demo-users">
-            <h2>Usuarios de prueba</h2>
+            <h2>Usuarios de prueba cargados en MySQL</h2>
             <ul>
                 <li><strong>chefana</strong> / Receta123!</li>
                 <li><strong>martinchef</strong> / Cocina123!</li>

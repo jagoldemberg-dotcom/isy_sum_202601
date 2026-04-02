@@ -29,28 +29,17 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
-                // 1. Corrección: Habilitar encabezados de seguridad (CSP, X-Frame-Options, X-Content-Type-Options)
-                .headers(headers -> headers
-                        // Mitigación Anti-Clickjacking
-                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
-                        // Mitigación MIME-sniffing
-                        .contentTypeOptions(contentTypeOptions -> {})
-                        // Mitigación XSS forzando CSP
-                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self'"))
-                        // Mitigación HSTS (Strict-Transport-Security)
-                        .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
-                )
-                // Reglas de autorización existentes...
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/home", "/**.css").permitAll()
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(HttpMethod.POST, Constants.LOGIN_URL).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/recipes", "/recipes/latest", "/recipes/popular", "/recipes/search").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/recipes/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .formLogin((form) -> form
-                        .loginPage("/login").permitAll()
-                )
-                .logout((logout) -> logout.permitAll());
+                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

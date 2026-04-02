@@ -54,7 +54,7 @@
     <section class="section-block">
         <div class="section-heading">
             <h2>Recetas más recientes</h2>
-            <p>Vista pública con resumen. El detalle completo requiere autenticación.</p>
+            <p>Vista pública consultada desde el backend. El detalle completo requiere autenticación.</p>
         </div>
         <div class="card-grid">
             <article class="recipe-card" th:each="recipe : ${latestRecipes}">
@@ -77,7 +77,7 @@
     <section class="section-block soft-panel">
         <div class="section-heading">
             <h2>Recetas más populares</h2>
-            <p>Selección destacada para motivar a los usuarios a leer y compartir más preparaciones.</p>
+            <p>Selección destacada obtenida desde la API para evidenciar integración real entre capas.</p>
         </div>
         <div class="card-grid">
             <article class="recipe-card compact" th:each="recipe : ${popularRecipes}">

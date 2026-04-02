@@ -11,6 +11,12 @@ services:
       - "3306:3306"
     volumes:
       - ./sql/01_schema_and_data.sql:/docker-entrypoint-initdb.d/01_schema_and_data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
   backend:
     build: ./backend
@@ -18,7 +24,9 @@ services:
     ports:
       - "8081:8080"
     depends_on:
-      - mysql-isy2202
+      mysql-isy2202:
+        condition: service_healthy
+    restart: on-failure
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-isy2202:3306/mydatabase?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: myuser
@@ -32,3 +40,5 @@ services:
       - "8080:8080"
     depends_on:
       - backend
+    environment:
+      BACKEND_URL: http://backend:8080

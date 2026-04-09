@@ -32,12 +32,13 @@ services:
       SPRING_DATASOURCE_USERNAME: myuser
       SPRING_DATASOURCE_PASSWORD: password
       APP_JWT_SECRET: SeguridadCalidadJWTSecretKey2026SeguridadCalidadJWT!
+      APP_PUBLIC_BASE_URL: http://localhost/recetas
 
   frontend:
     build: ./frontend
     container_name: frontend-isy2202
     ports:
-      - "8080:8080"
+      - "80:8080"
     depends_on:
       - backend
     environment:

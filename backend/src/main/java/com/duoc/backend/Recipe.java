@@ -4,6 +4,7 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,7 +16,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import jakarta.persistence.FetchType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,6 +81,11 @@ public class Recipe {
     @CollectionTable(name = "recipe_photos", joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "photo_url", nullable = false, length = 500)
     private List<String> photos = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "recipe_videos", joinColumns = @JoinColumn(name = "recipe_id"))
+    @Column(name = "video_url", nullable = false, length = 500)
+    private List<String> videos = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -167,7 +172,7 @@ public class Recipe {
     }
 
     public void setIngredients(List<String> ingredients) {
-        this.ingredients = ingredients;
+        this.ingredients = ingredients == null ? new ArrayList<>() : new ArrayList<>(ingredients);
     }
 
     public List<String> getPhotos() {
@@ -175,6 +180,14 @@ public class Recipe {
     }
 
     public void setPhotos(List<String> photos) {
-        this.photos = photos;
+        this.photos = photos == null ? new ArrayList<>() : new ArrayList<>(photos);
+    }
+
+    public List<String> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<String> videos) {
+        this.videos = videos == null ? new ArrayList<>() : new ArrayList<>(videos);
     }
 }

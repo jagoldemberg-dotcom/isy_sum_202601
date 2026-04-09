@@ -29,11 +29,12 @@
             <h1>Comparte y descubre recetas de cocina</h1>
             <p class="hero-text">
                 Revisa las recetas más recientes y populares, busca por nombre, cocina, ingrediente,
-                país de origen o dificultad, y entra al detalle completo sólo cuando hayas iniciado sesión.
+                país de origen o dificultad. Cuando inicies sesión podrás comentar, valorar, agregar fotos,
+                agregar videos y compartir recetas.
             </p>
             <div class="hero-buttons">
                 <a class="btn" th:href="@{/buscar}">Buscar recetas</a>
-                <a class="btn btn-secondary" th:href="@{/login}" th:if="${!authenticated}">Acceder a recetas privadas</a>
+                <a class="btn btn-secondary" th:href="@{/login}" th:if="${!authenticated}">Acceder a funciones privadas</a>
             </div>
         </div>
         <aside class="ad-panel">
@@ -77,7 +78,7 @@
     <section class="section-block soft-panel">
         <div class="section-heading">
             <h2>Recetas más populares</h2>
-            <p>Selección destacada obtenida desde la API para evidenciar integración real entre capas.</p>
+            <p>Selección destacada obtenida desde la API para evidenciar integración real entre capas y base de datos.</p>
         </div>
         <div class="card-grid">
             <article class="recipe-card compact" th:each="recipe : ${popularRecipes}">

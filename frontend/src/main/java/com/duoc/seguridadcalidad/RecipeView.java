@@ -19,6 +19,7 @@ public class RecipeView {
     private Integer popularityScore;
     private List<String> ingredients;
     private List<String> photos;
+    private List<String> videos;
     private String instructions;
 
     public Long getId() {
@@ -99,6 +100,14 @@ public class RecipeView {
 
     public void setPhotos(List<String> photos) {
         this.photos = photos;
+    }
+
+    public List<String> getVideos() {
+        return videos == null ? Collections.emptyList() : videos;
+    }
+
+    public void setVideos(List<String> videos) {
+        this.videos = videos;
     }
 
     public String getInstructions() {

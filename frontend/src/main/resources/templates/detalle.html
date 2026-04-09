@@ -21,39 +21,154 @@
     </nav>
 </header>
 
-<main class="page-wrapper detail-layout">
-    <section class="detail-image-panel">
-        <img th:src="${recipe.imageUrl}" th:alt="${recipe.name}">
+<main class="page-wrapper detail-page">
+    <section class="section-block">
+        <div class="alert success" th:if="${ok != ''}" th:text="${ok}">Operación realizada</div>
+        <div class="alert error" th:if="${error != ''}" th:text="${error}">Ocurrió un error</div>
+
+        <div class="detail-layout">
+            <section class="detail-image-panel">
+                <img th:src="${recipe.imageUrl}" th:alt="${recipe.name}">
+            </section>
+
+            <section class="detail-content">
+                <span class="badge" th:text="${recipe.countryOfOrigin}">Chile</span>
+                <h1 th:text="${recipe.name}">Nombre receta</h1>
+                <p class="detail-summary" th:text="${recipe.summary}">Resumen</p>
+
+                <div class="meta-row strong">
+                    <span th:text="'Tipo de cocina: ' + ${recipe.cuisineType}">Tipo</span>
+                    <span th:text="'Dificultad: ' + ${recipe.difficulty}">Dificultad</span>
+                    <span th:text="'Tiempo: ' + ${recipe.cookTimeMinutes} + ' min'">Tiempo</span>
+                    <span th:text="'Valoración promedio: ' + ${#numbers.formatDecimal(averageRating,1,1)}">Valoración</span>
+                    <span th:text="'Comentarios: ' + ${commentCount}">Comentarios</span>
+                </div>
+            </section>
+        </div>
     </section>
 
-    <section class="detail-content">
-        <span class="badge" th:text="${recipe.countryOfOrigin}">Chile</span>
-        <h1 th:text="${recipe.name}">Nombre receta</h1>
-        <p class="detail-summary" th:text="${recipe.summary}">Resumen</p>
+    <section class="detail-columns">
+        <article class="detail-box">
+            <h2>Ingredientes</h2>
+            <ul>
+                <li th:each="ingredient : ${recipe.ingredients}" th:text="${ingredient}">Ingrediente</li>
+            </ul>
+        </article>
 
-        <div class="meta-row strong">
-            <span th:text="'Tipo de cocina: ' + ${recipe.cuisineType}">Tipo</span>
-            <span th:text="'Dificultad: ' + ${recipe.difficulty}">Dificultad</span>
-            <span th:text="'Tiempo: ' + ${recipe.cookTimeMinutes} + ' min'">Tiempo</span>
-        </div>
-
-        <div class="detail-columns">
-            <article class="detail-box">
-                <h2>Ingredientes</h2>
-                <ul>
-                    <li th:each="ingredient : ${recipe.ingredients}" th:text="${ingredient}">Ingrediente</li>
-                </ul>
-            </article>
-            <article class="detail-box">
-                <h2>Preparación</h2>
-                <ol>
-                    <li th:each="step : ${recipe.instructionSteps}" th:text="${step}">Paso</li>
-                </ol>
-            </article>
-        </div>
-
-        <a class="btn" th:href="@{/buscar}">Volver a buscar</a>
+        <article class="detail-box">
+            <h2>Preparación</h2>
+            <ol>
+                <li th:each="step : ${recipe.instructionSteps}" th:text="${step}">Paso</li>
+            </ol>
+        </article>
     </section>
+
+    <section class="section-block">
+        <div class="section-heading">
+            <h2>Fotos de la receta</h2>
+            <p>Los usuarios autenticados pueden agregar nuevas fotos.</p>
+        </div>
+        <div class="media-grid">
+            <img class="gallery-image" th:each="photo : ${recipe.photos}" th:src="${photo}" th:alt="${recipe.name}">
+        </div>
+
+        <form class="inline-form" method="post" th:action="@{/detalle/{id}/fotos(id=${recipe.id})}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="url" name="url" placeholder="https://ejemplo.com/foto.jpg" required maxlength="500">
+            <button class="btn" type="submit">Agregar foto</button>
+        </form>
+    </section>
+
+    <section class="section-block">
+        <div class="section-heading">
+            <h2>Videos de la receta</h2>
+            <p>Se aceptan enlaces https de YouTube, YouTube Short o Vimeo.</p>
+        </div>
+        <ul class="video-list">
+            <li th:if="${#lists.isEmpty(recipe.videos)}">Aún no hay videos registrados.</li>
+            <li th:each="video : ${recipe.videos}">
+                <a class="text-link" th:href="${video}" th:text="${video}" target="_blank" rel="noopener noreferrer">Video</a>
+            </li>
+        </ul>
+
+        <form class="inline-form" method="post" th:action="@{/detalle/{id}/videos(id=${recipe.id})}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="url" name="url" placeholder="https://www.youtube.com/watch?v=..." required maxlength="500">
+            <button class="btn" type="submit">Agregar video</button>
+        </form>
+    </section>
+
+    <section class="detail-columns">
+        <article class="detail-box">
+            <h2>Comentarios y valoraciones</h2>
+            <div class="comment-list" th:if="${!#lists.isEmpty(comments)}">
+                <article class="comment-card" th:each="comment : ${comments}">
+                    <div class="comment-header">
+                        <strong th:text="${comment.username}">usuario</strong>
+                        <span th:text="${comment.stars}">★★★★★</span>
+                    </div>
+                    <p th:text="${comment.commentText}">Comentario</p>
+                    <small th:text="${comment.formattedCreatedAt}">Fecha</small>
+                </article>
+            </div>
+            <div class="empty-state" th:if="${#lists.isEmpty(comments)}">
+                Todavía no existen comentarios para esta receta.
+            </div>
+        </article>
+
+        <article class="detail-box">
+            <h2>Agregar comentario</h2>
+            <form class="stack-form" method="post" th:action="@{/detalle/{id}/comentarios(id=${recipe.id})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <label>
+                    Valoración
+                    <select name="rating" required>
+                        <option value="5">5 - Excelente</option>
+                        <option value="4">4 - Muy buena</option>
+                        <option value="3">3 - Buena</option>
+                        <option value="2">2 - Regular</option>
+                        <option value="1">1 - Deficiente</option>
+                    </select>
+                </label>
+                <label>
+                    Comentario
+                    <textarea name="commentText" rows="5" maxlength="1000" required></textarea>
+                </label>
+                <button class="btn" type="submit">Publicar comentario</button>
+            </form>
+        </article>
+    </section>
+
+    <section class="section-block">
+        <div class="section-heading">
+            <h2>Compartir receta</h2>
+            <p>Puedes registrar que la compartiste en el sitio o redirigirte a una red social.</p>
+        </div>
+        <div class="share-actions">
+            <form method="post" th:action="@{/detalle/{id}/compartir(id=${recipe.id})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="platform" value="sitio">
+                <button class="btn btn-secondary" type="submit">Compartir en el sitio</button>
+            </form>
+            <form method="post" th:action="@{/detalle/{id}/compartir(id=${recipe.id})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="platform" value="facebook">
+                <button class="btn btn-outline" type="submit">Facebook</button>
+            </form>
+            <form method="post" th:action="@{/detalle/{id}/compartir(id=${recipe.id})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="platform" value="whatsapp">
+                <button class="btn btn-outline" type="submit">WhatsApp</button>
+            </form>
+            <form method="post" th:action="@{/detalle/{id}/compartir(id=${recipe.id})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="platform" value="x">
+                <button class="btn btn-outline" type="submit">X</button>
+            </form>
+        </div>
+    </section>
+
+    <a class="btn" th:href="@{/buscar}">Volver a buscar</a>
 </main>
 </body>
 </html>

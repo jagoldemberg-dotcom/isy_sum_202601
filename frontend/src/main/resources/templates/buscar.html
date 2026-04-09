@@ -31,10 +31,10 @@
             <p>Filtra por nombre, tipo de cocina, ingrediente, país de origen y dificultad consultando la API backend.</p>
         </div>
         <form class="search-form" method="get" th:action="@{/buscar}">
-            <input type="text" name="name" placeholder="Nombre" th:value="${name}">
-            <input type="text" name="cuisineType" placeholder="Tipo de cocina" th:value="${cuisineType}">
-            <input type="text" name="ingredient" placeholder="Ingrediente" th:value="${ingredient}">
-            <input type="text" name="countryOfOrigin" placeholder="País de origen" th:value="${countryOfOrigin}">
+            <input type="text" name="name" placeholder="Nombre" th:value="${name}" maxlength="120">
+            <input type="text" name="cuisineType" placeholder="Tipo de cocina" th:value="${cuisineType}" maxlength="60">
+            <input type="text" name="ingredient" placeholder="Ingrediente" th:value="${ingredient}" maxlength="120">
+            <input type="text" name="countryOfOrigin" placeholder="País de origen" th:value="${countryOfOrigin}" maxlength="60">
             <select name="difficulty">
                 <option value="">Todas las dificultades</option>
                 <option value="Fácil" th:selected="${difficulty == 'Fácil'}">Fácil</option>

@@ -1,6 +1,9 @@
 CREATE DATABASE IF NOT EXISTS mydatabase;
 USE mydatabase;
 
+DROP TABLE IF EXISTS recipe_shares;
+DROP TABLE IF EXISTS recipe_comments;
+DROP TABLE IF EXISTS recipe_videos;
 DROP TABLE IF EXISTS recipe_photos;
 DROP TABLE IF EXISTS recipe_ingredients;
 DROP TABLE IF EXISTS recipes;
@@ -43,6 +46,39 @@ CREATE TABLE recipe_photos (
     CONSTRAINT fk_recipe_photos_recipe FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
 );
 
+CREATE TABLE recipe_videos (
+    recipe_id BIGINT NOT NULL,
+    video_url VARCHAR(500) NOT NULL,
+    CONSTRAINT fk_recipe_videos_recipe FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE recipe_comments (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    recipe_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    comment_text VARCHAR(1000) NOT NULL,
+    rating INT NOT NULL,
+    created_at DATETIME NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_recipe_comments_recipe FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
+    CONSTRAINT fk_recipe_comments_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE recipe_shares (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    recipe_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    platform VARCHAR(20) NOT NULL,
+    shared_at DATETIME NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_recipe_shares_recipe FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
+    CONSTRAINT fk_recipe_shares_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+INSERT INTO users (username, email, password, role) VALUES
+('chefana', 'chefana@duoc.cl', '$2y$10$.yt57F.PiEc.QWYtmTUJJ.mwy97zDb.opg919QIEUuqewXALeruHC', 'ROLE_USER'),
+('martinchef', 'martinchef@duoc.cl', '$2y$10$zHkyhsIPdaaIFA3bxFBWHeD7s7NOTAo6PmvC3Sqc0rlvNv.lv6l5.', 'ROLE_USER'),
+('adminrecetas', 'admin@duoc.cl', '$2y$10$07B6PsNXwVDeMLx0lI4rYeRqOFi6c3RVtHkvxVziR.XLCzienLG56', 'ROLE_ADMIN');
 
 INSERT INTO recipes (name, cuisine_type, country_of_origin, difficulty, summary, instructions, cook_time_minutes, popularity_score, created_at) VALUES
 ('Pastel de choclo', 'Chilena', 'Chile', 'Media', 'Receta tradicional chilena con pino, pollo y cobertura de choclo.', 'Prepara el pino. Cocina el pollo. Procesa el choclo. Arma la fuente y hornea hasta dorar.', 55, 96, '2026-03-20 12:00:00'),
@@ -61,3 +97,19 @@ INSERT INTO recipe_photos (recipe_id, photo_url) VALUES
 (2, 'https://images.unsplash.com/photo-1619894991209-9f9694be045a?auto=format&fit=crop&w=900&q=80'),
 (3, 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=900&q=80'),
 (4, 'https://images.unsplash.com/photo-1515443961218-a51367888e4b?auto=format&fit=crop&w=900&q=80');
+
+INSERT INTO recipe_videos (recipe_id, video_url) VALUES
+(1, 'https://www.youtube.com/watch?v=7sELqobCIXU'),
+(2, 'https://www.youtube.com/watch?v=hiwe6Q4Jzls'),
+(3, 'https://www.youtube.com/watch?v=9f4wNFKd5_c');
+
+INSERT INTO recipe_comments (recipe_id, user_id, comment_text, rating, created_at) VALUES
+(1, 1, 'Muy sabrosa y fácil de seguir. La preparé el fin de semana.', 5, '2026-03-21 14:30:00'),
+(1, 2, 'Buen resultado. Le agregué más cebolla al pino y quedó excelente.', 4, '2026-03-21 18:15:00'),
+(2, 1, 'Fresca y rápida, ideal para días de calor.', 5, '2026-03-22 13:00:00'),
+(3, 2, 'Receta simple y rendidora para compartir.', 4, '2026-03-22 20:10:00');
+
+INSERT INTO recipe_shares (recipe_id, user_id, platform, shared_at) VALUES
+(1, 1, 'sitio', '2026-03-22 09:10:00'),
+(1, 1, 'whatsapp', '2026-03-22 09:11:00'),
+(2, 2, 'facebook', '2026-03-22 12:20:00');

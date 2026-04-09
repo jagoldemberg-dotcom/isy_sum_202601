@@ -36,7 +36,7 @@ public class RecipeApiService {
                                    String countryOfOrigin,
                                    String difficulty) {
         try {
-            return toList(backendRestClient.get()
+            return toRecipeList(backendRestClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/recipes/search")
                             .queryParamIfPresent("name", optionalValue(name))
@@ -74,9 +74,96 @@ public class RecipeApiService {
         }
     }
 
+    public List<CommentView> getComments(Long recipeId, String token) {
+        try {
+            return toCommentList(backendRestClient.get()
+                    .uri("/recipes/{id}/comments", recipeId)
+                    .header(HttpHeaders.AUTHORIZATION, token)
+                    .retrieve()
+                    .body(CommentView[].class));
+        } catch (RestClientException exception) {
+            return List.of();
+        }
+    }
+
+    public void addComment(Long recipeId, AddCommentForm form, String token) {
+        executeSecuredPost(
+                "/recipes/{id}/comments",
+                recipeId,
+                token,
+                """
+                {
+                  "commentText": "%s",
+                  "rating": %s
+                }
+                """.formatted(escapeJson(form.getCommentText()), form.getRating())
+        );
+    }
+
+    public void addPhoto(Long recipeId, AddMediaForm form, String token) {
+        executeSecuredPost(
+                "/recipes/{id}/photos",
+                recipeId,
+                token,
+                """
+                {
+                  "photoUrl": "%s"
+                }
+                """.formatted(escapeJson(form.getUrl()))
+        );
+    }
+
+    public void addVideo(Long recipeId, AddMediaForm form, String token) {
+        executeSecuredPost(
+                "/recipes/{id}/videos",
+                recipeId,
+                token,
+                """
+                {
+                  "videoUrl": "%s"
+                }
+                """.formatted(escapeJson(form.getUrl()))
+        );
+    }
+
+    public RecipeShareResponseView shareRecipe(Long recipeId, ShareForm form, String token) {
+        try {
+            RecipeShareResponseView response = backendRestClient.post()
+                    .uri("/recipes/{id}/shares", recipeId)
+                    .header(HttpHeaders.AUTHORIZATION, token)
+                    .body("""
+                          {
+                            "platform": "%s"
+                          }
+                          """.formatted(escapeJson(form.getPlatform())))
+                    .retrieve()
+                    .body(RecipeShareResponseView.class);
+
+            if (response == null) {
+                throw new ResponseStatusException(BAD_GATEWAY, "No fue posible compartir la receta");
+            }
+            return response;
+        } catch (RestClientException exception) {
+            throw new ResponseStatusException(BAD_GATEWAY, "No fue posible compartir la receta", exception);
+        }
+    }
+
+    private void executeSecuredPost(String path, Long recipeId, String token, String body) {
+        try {
+            backendRestClient.post()
+                    .uri(path, recipeId)
+                    .header(HttpHeaders.AUTHORIZATION, token)
+                    .body(body)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientException exception) {
+            throw new ResponseStatusException(BAD_GATEWAY, "No fue posible registrar la acción", exception);
+        }
+    }
+
     private List<RecipeView> readPublicList(String path) {
         try {
-            return toList(backendRestClient.get()
+            return toRecipeList(backendRestClient.get()
                     .uri(path)
                     .retrieve()
                     .body(RecipeView[].class));
@@ -85,7 +172,11 @@ public class RecipeApiService {
         }
     }
 
-    private List<RecipeView> toList(RecipeView[] response) {
+    private List<RecipeView> toRecipeList(RecipeView[] response) {
+        return response == null ? List.of() : Arrays.asList(response);
+    }
+
+    private List<CommentView> toCommentList(CommentView[] response) {
         return response == null ? List.of() : Arrays.asList(response);
     }
 
@@ -93,5 +184,16 @@ public class RecipeApiService {
         return value == null || value.isBlank()
                 ? java.util.Optional.empty()
                 : java.util.Optional.of(value);
+    }
+
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", " ")
+                .replace("\n", " ");
     }
 }

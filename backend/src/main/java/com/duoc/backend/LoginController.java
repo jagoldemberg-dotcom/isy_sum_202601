@@ -14,14 +14,14 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @RestController
 public class LoginController {
 
-    private final JWTAuthenticationConfig jwtAuthenticationConfig;
+    private final JWTAuthenticationConfig jwtAuthenticationConfigpassword;
     private final MyUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
     public LoginController(JWTAuthenticationConfig jwtAuthenticationConfig,
                            MyUserDetailsService userDetailsService,
                            PasswordEncoder passwordEncoder) {
-        this.jwtAuthenticationConfig = jwtAuthenticationConfig;
+        this.jwtAuthenticationConfigpassword = jwtAuthenticationConfig;
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -35,7 +35,7 @@ public class LoginController {
                 throw new ResponseStatusException(UNAUTHORIZED, "Credenciales inválidas");
             }
 
-            String token = jwtAuthenticationConfig.getJWTToken(user.getUsername(), user.getRole());
+            String token = jwtAuthenticationConfigpassword.getJWTToken(user.getUsername(), user.getRole());
             return ResponseEntity.ok(new LoginResponse(token, user.getUsername(), user.getRole()));
         } catch (UsernameNotFoundException | IllegalArgumentException ex) {
             throw new ResponseStatusException(UNAUTHORIZED, "Credenciales inválidas");
